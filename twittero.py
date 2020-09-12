@@ -102,11 +102,11 @@ def main():
     cuenta = args[0] 
     fecha = args[1]
     diario = args[2]
-    categoria = args[3]
+    categorias = args[3]
 
     t = Twittero()
     if cuenta == 'dicenlosmedios':
-        t.postear_en_dlm(fecha=fecha, diario=diario, categoria=categoria)
+        t.postear_en_dlm(fecha=fecha, diario=diario, categorias=categorias)
     elif cuenta == 'discursosdeaf':
         pass
     elif cuenta == 'discursosdemm':
