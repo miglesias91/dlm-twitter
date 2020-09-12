@@ -1,40 +1,58 @@
 
 import getopt, sys
+import os
 import json
 
 import tweepy
 
 from resultados import Resultados
+from escritor import Escritor
+from visualizador import Visualizador
 
 class Twittero:
     def __init__(self):
         pass
 
-    def postear_en_dlm(self, fecha, diario, categoria):
+    def etiqueta():
+        pass
+
+    def postear_en_dlm(self, fecha, diario, categorias):
         resultados = Resultados()
+        visu = Visualizador()
+        tolkien = Escritor()
 
-        freqs = resultados.frecuencias(fecha=fecha, diario=diario, categorias=categoria, verbos=False)
+        if '-' in categorias:
+            categorias = categorias.split('-')
+        else:
+            categorias = [categorias]
 
-        texto = "Tendencias en las noticias de #" + categoria + " de #" + diario + " del " + fecha + "\n"
-        i = 0
-        for nombre, m in freqs.items():
-            linea = ""
-            i += 1
-            if i >= 10:
-                linea = str(i) + ". #" + nombre.replace(' ','') + " " + str(m) + "\n"
-                texto += linea
-                break
-            else:
-                linea = str(i) + ".  #" + nombre.replace(' ','') + " " + str(m) + "\n"
+        freqs = resultados.frecuencias(fecha=fecha, diario=diario, categorias=categorias, top=20,verbos=False)
+        path_imagen = os.getcwd() + '/imagenes/' + diario + '-todo.png'
+        visu.nube(path_imagen, freqs, con_espacios=False)
+        texto = tolkien.tweet_tendencias(freqs=freqs, fecha=fecha, diario=diario)
 
-            if len(texto) + len(linea) > 220:
-                break
-            else:
-                texto += linea
+        textos_e_imagenes = [{'media': [path_imagen], 'texto': texto}]
+
+        for c in categorias:
+            freqs = resultados.frecuencias(fecha=fecha, diario=diario, categorias=c, top=20, verbos=False)
+            path_imagen = os.getcwd() + '/imagenes/' + diario + '-' + c + '.png'
+            visu.nube(path_imagen, freqs, con_espacios=False)
+            texto = tolkien.tweet_tendencias(freqs=freqs, fecha=fecha, diario=diario, categorias=c)
+
+            textos_e_imagenes.append({'media': [path_imagen], 'texto': texto})
 
         api = self.api('dicenlosmedios')
 
-        api.update_status(status=texto)
+        id_a_responder = 0
+        for texto_e_imagen in textos_e_imagenes:
+            medias = []
+            for path_img in texto_e_imagen['media']:
+                media = api.media_upload(path_img)
+                medias.append(media)
+                if len(medias) >= 4:
+                    break
+            estado = api.update_status(status=texto_e_imagen['texto'], in_reply_to_status_id=id_a_responder, auto_populate_reply_metadata=True, media_ids=[media.media_id for media in medias])
+            id_a_responder = estado.id
 
     def postear_en_discursosdeaf(self, fecha):
         pass

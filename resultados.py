@@ -49,7 +49,7 @@ class Resultados:
             f_todo = self.sumar_freqs(f_ter, f_ver, top)
             f_todo = self.sumar_freqs(f_todo, f_per, top)
 
-            freq_total = self.sumar_freqs(freq_total, f_todo, 10)
+            freq_total = self.sumar_freqs(freq_total, f_todo, top)
 
         return freq_total
 
