@@ -27,6 +27,9 @@ class Twittero:
             categorias = [categorias]
 
         freqs = resultados.frecuencias(fecha=fecha, diario=diario, categorias=categorias, top=20,verbos=False)
+        if not bool(freqs):
+            return
+
         path_imagen = os.getcwd() + '/imagenes/' + diario + '-todo.png'
         visu.nube(path_imagen, freqs, con_espacios=False)
         texto = tolkien.tweet_tendencias(freqs=freqs, fecha=fecha, diario=diario)
@@ -35,6 +38,9 @@ class Twittero:
 
         for c in categorias:
             freqs = resultados.frecuencias(fecha=fecha, diario=diario, categorias=c, top=20, verbos=False)
+            if not bool(freqs):
+                continue
+
             path_imagen = os.getcwd() + '/imagenes/' + diario + '-' + c + '.png'
             visu.nube(path_imagen, freqs, con_espacios=False)
             texto = tolkien.tweet_tendencias(freqs=freqs, fecha=fecha, diario=diario, categorias=c)
