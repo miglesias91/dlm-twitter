@@ -51,4 +51,4 @@ class Escritor:
 
     def separar_fecha(self, fecha, separador='.'):
         if type(fecha) is str:
-            return fecha[0:4] + separador + fecha[4:6] + separador + fecha[6:8]
+            return fecha[6:8] + separador + fecha[4:6] + separador + fecha[0:4]
