@@ -108,6 +108,7 @@ log.txt
 twitter.keys
 conexiones.json
 modelos/
+scripts/
 freqs/
 *.png
 *.jpg
