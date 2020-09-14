@@ -8,12 +8,16 @@ import tweepy
 from resultados import Resultados
 from escritor import Escritor
 from visualizador import Visualizador
+from cm import CM
 
 class Twittero:
     def __init__(self):
         pass
 
     def etiqueta():
+        pass
+
+    def resumen_semanal_dlm(self, fecha, diario, categorias):
         pass
 
     def postear_en_dlm(self, fecha, diario, categorias):
@@ -47,38 +51,41 @@ class Twittero:
 
             textos_e_imagenes.append({'media': [path_imagen], 'texto': texto})
 
-        api = self.api('dicenlosmedios')
-
-        id_a_responder = 0
-        for texto_e_imagen in textos_e_imagenes:
-            medias = []
-            for path_img in texto_e_imagen['media']:
-                media = api.media_upload(path_img)
-                medias.append(media)
-                if len(medias) >= 4:
-                    break
-            estado = api.update_status(status=texto_e_imagen['texto'], in_reply_to_status_id=id_a_responder, auto_populate_reply_metadata=True, media_ids=[media.media_id for media in medias])
-            id_a_responder = estado.id
+        cm = CM()
+        cm.twittear_hilo('dicenlosmedios', textos_e_imagenes)
 
     def postear_en_discursosdeaf(self, fecha):
-        pass
+        fecha = parametros['fecha']
+
+        kiosco = Kiosco()
+        textos = [noticia['texto'] for noticia in kiosco.noticias(diario='casarosada', categorias='', fecha=fecha)]
+
+        if len(textos) == 0:
+            return
+
+        nlp = NLP()
+        nlp.separador = ''
+        
+        cm = CM()
+        for texto in textos:
+
+            # tw_intro = tweet_intro(texto, string_fecha) # ACA ESTA EL ERROR; STRING FECHA ESTA EN FORMADO MM.DD.YYYY, DEBERIA ESTAR EN YYYY.MM.DD
+            tw_intro = tweet_intro(texto, fecha)
+
+            kiosco = Kiosco()
+
+            top_terminos = nlp.top_terminos(textos=[texto], n=15)
+            top_verbos = nlp.top_verbos(textos=[texto], n=15)
+
+            tw_terminos = tweet_terminos(top_terminos)
+            tw_verbos = tweet_verbos(top_verbos)
+
+            cm.twittear_hilo('discursosdeaf', )
+            if parametros['twittear']:
+                utiles.twittear_hilo([tw_intro, tw_terminos, tw_verbos], cuenta="dlp")
         
     def postear_en_discursosdemm(self, fecha):
         pass
-
-    def api(self, cuenta):
-        claves = open("twitter.keys", "r")
-        json_claves = json.load(claves)
-        
-        consumer_key = json_claves[cuenta]['consumer_key']
-        consumer_secret = json_claves[cuenta]['consumer_secret']
-        access_token = json_claves[cuenta]['access_token']
-        access_token_secret = json_claves[cuenta]['access_token_secret']
-
-        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-        auth.set_access_token(access_token, access_token_secret)
-
-        return tweepy.API(auth)
 
 def usage():
     print("twittero (twitter dicenlosmedios, discursosdeaf, discursosdemm) v1.0")
