@@ -2,10 +2,12 @@
 import getopt, sys
 import os
 import json
+import datetime
 
 import tweepy
 
-from resultados import Resultados
+from bd.resultados import Resultados
+from bd.kioscomongo import Kiosco
 from escritor import Escritor
 from visualizador import Visualizador
 from cm import CM
@@ -55,34 +57,57 @@ class Twittero:
         cm.twittear_hilo('dicenlosmedios', textos_e_imagenes)
 
     def postear_en_discursosdeaf(self, fecha):
-        fecha = parametros['fecha']
-
+        resultados = Resultados()
         kiosco = Kiosco()
-        textos = [noticia['texto'] for noticia in kiosco.noticias(diario='casarosada', categorias='', fecha=fecha)]
+        visu = Visualizador()
+        tolkien = Escritor()
 
-        if len(textos) == 0:
+        # recupero frecuencias del discurso
+        freqs_por_hora = resultados.frecuencias_sin_agrupar(fecha=fecha, diario='casarosada', top=20,verbos=False)
+        if not bool(freqs_por_hora):
             return
-
-        nlp = NLP()
-        nlp.separador = ''
         
         cm = CM()
-        for texto in textos:
+        for freq_y_hora in freqs_por_hora:
+            hora = freq_y_hora['categoria']
+            fecha_discurso = datetime.datetime.strptime(fecha+hora, '%Y%m%d%H%M%S')
 
-            # tw_intro = tweet_intro(texto, string_fecha) # ACA ESTA EL ERROR; STRING FECHA ESTA EN FORMADO MM.DD.YYYY, DEBERIA ESTAR EN YYYY.MM.DD
-            tw_intro = tweet_intro(texto, fecha)
+            # recupero texto del discurso
+            discurso = kiosco.noticias(fecha=fecha_discurso, diario='casarosada')[0]
+            
+            # armo tweet con el discurso en imagenes
+            paths_imagenes = visu.texto_en_imagenes(discurso['texto'], 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/intro")
+            tw_intro = {
+                'texto': "Análisis de discurso del " + tolkien.separar_fecha(fecha=fecha) + " de #AlbertoFernández.",
+                'media': paths_imagenes
+                }
 
-            kiosco = Kiosco()
+            # armo textos del tweet
+            txt_terminos = tolkien.texto_tweet_terminos_discurso(freq_y_hora['ter_txt'])
+            txt_verbos = tolkien.texto_tweet_verbos_discurso(freq_y_hora['ver_txt'])
 
-            top_terminos = nlp.top_terminos(textos=[texto], n=15)
-            top_verbos = nlp.top_verbos(textos=[texto], n=15)
+            # armo tweet con top 15 de terminos
+            path_imagen_terminos = os.getcwd() + '/imagenes/terminos_discurso.png'
+            etiquetas_terminos = [nombre for nombre, m in freq_y_hora['ter_txt'].items()][:15]
+            data_terminos = [m for nombre, m in freq_y_hora['ter_txt'].items()][:15]
+            visu.lollipop(path=path_imagen_terminos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de términos", etiquetas=etiquetas_terminos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_terminos)
+            tw_terminos = {
+                'texto': txt_terminos,
+                'media': [path_imagen_terminos]
+                }
 
-            tw_terminos = tweet_terminos(top_terminos)
-            tw_verbos = tweet_verbos(top_verbos)
+            # armo tweet con top 15 de verbos
+            path_imagen_verbos = os.getcwd() + '/imagenes/verbos_discurso.png'
+            etiquetas_verbos = [nombre for nombre, m in freq_y_hora['ver_txt'].items()][:15]
+            data_verbos = [m for nombre, m in freq_y_hora['ver_txt'].items()][:15]
+            visu.lollipop(path=path_imagen_verbos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de verbos", etiquetas=etiquetas_verbos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_verbos)
+            tw_verbos = {
+                'texto': txt_verbos,
+                'media': [path_imagen_verbos]
+                }
 
-            cm.twittear_hilo('discursosdeaf', )
-            if parametros['twittear']:
-                utiles.twittear_hilo([tw_intro, tw_terminos, tw_verbos], cuenta="dlp")
+            # el CM twittea
+            cm.twittear_hilo('discursosdeaf', [tw_intro, tw_terminos, tw_verbos])
         
     def postear_en_discursosdemm(self, fecha):
         pass

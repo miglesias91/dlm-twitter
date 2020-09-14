@@ -53,6 +53,26 @@ class Resultados:
 
         return freq_total
 
+    def frecuencias_sin_agrupar(self, fecha=None, diario=None, categorias=None, terminos=True, verbos=True, personas=True, top=10):
+        query = {}
+
+        if fecha:
+            if type(fecha) is list:
+                query['fecha']={"$gte":fecha[0], "$lte": fecha[1]}
+            else:
+                query['fecha']=fecha
+
+        if diario:
+            query['diario']=diario
+
+        if categorias:
+            if type(categorias) is list:
+                query['categoria']={"$in":categorias}
+            else:
+                query['categoria']=categorias
+
+        return [n for n in self.bd.frecuencias.find(query)]
+
     def sumar_freqs(self, freqs, freqs_nuevas, top):
         for k, v in freqs_nuevas.items():
             if k in freqs:
