@@ -196,7 +196,7 @@ def main():
     elif cuenta == 'discursosdeaf':
         t.postear_en_discursosdeaf(fecha=fecha)
     elif cuenta == 'discursosdemm':
-        pass
+        t.postear_en_discursosdemm()
 
 if __name__ == "__main__":
     main()        
