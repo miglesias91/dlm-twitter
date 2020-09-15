@@ -179,21 +179,22 @@ def main():
             print("twittero (twitter dicenlosmedios, discursosdeaf, discursosdemm) v1.0")
             print("./twittero.py dicenlosmedios [fecha] [diario] [categoria]")
             print("./twittero.py discursosdeaf [fecha]")
-            print("./twittero.py discursosdemm [fecha]")
+            print("./twittero.py discursosdemm [fecha](opcional)")
             return
         else:
             assert False, "opción desconocida"
 
-    cuenta = args[0] 
-    fecha = args[1]
+    cuenta = args[0]
 
     t = Twittero()
     if cuenta == 'dicenlosmedios':
+        fecha = args[1]
         diario = args[2]
         categorias = args[3]
 
         t.postear_en_dlm(fecha=fecha, diario=diario, categorias=categorias)
     elif cuenta == 'discursosdeaf':
+        fecha = args[1]
         t.postear_en_discursosdeaf(fecha=fecha)
     elif cuenta == 'discursosdemm':
         t.postear_en_discursosdemm()
