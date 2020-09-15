@@ -11,3 +11,7 @@ class TestAmbito(unittest.TestCase):
     def test_postear_en_discursosdeaf(self):
         t = Twittero()
         t.postear_en_discursosdeaf(fecha='20200914')
+
+    def test_postear_en_discursosdemm(self):
+        t = Twittero()
+        t.postear_en_discursosdemm()

@@ -76,7 +76,7 @@ class Twittero:
             discurso = kiosco.noticias(fecha=fecha_discurso, diario='casarosada')[0]
             
             # armo tweet con el discurso en imagenes
-            paths_imagenes = visu.texto_en_imagenes(discurso['texto'], 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/intro")
+            paths_imagenes = visu.texto_en_imagenes(discurso['texto'], 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/introaf")
             tw_intro = {
                 'texto': "Análisis de discurso del " + tolkien.separar_fecha(fecha=fecha) + " de #AlbertoFernández.",
                 'media': paths_imagenes
@@ -87,7 +87,7 @@ class Twittero:
             txt_verbos = tolkien.texto_tweet_verbos_discurso(freq_y_hora['ver_txt'])
 
             # armo tweet con top 15 de terminos
-            path_imagen_terminos = os.getcwd() + '/imagenes/terminos_discurso.png'
+            path_imagen_terminos = os.getcwd() + '/imagenes/terminos_discursoaf.png'
             etiquetas_terminos = [nombre for nombre, m in freq_y_hora['ter_txt'].items()][:15]
             data_terminos = [m for nombre, m in freq_y_hora['ter_txt'].items()][:15]
             visu.lollipop(path=path_imagen_terminos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de términos", etiquetas=etiquetas_terminos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_terminos)
@@ -97,7 +97,7 @@ class Twittero:
                 }
 
             # armo tweet con top 15 de verbos
-            path_imagen_verbos = os.getcwd() + '/imagenes/verbos_discurso.png'
+            path_imagen_verbos = os.getcwd() + '/imagenes/verbos_discursoaf.png'
             etiquetas_verbos = [nombre for nombre, m in freq_y_hora['ver_txt'].items()][:15]
             data_verbos = [m for nombre, m in freq_y_hora['ver_txt'].items()][:15]
             visu.lollipop(path=path_imagen_verbos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de verbos", etiquetas=etiquetas_verbos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_verbos)
@@ -109,8 +109,55 @@ class Twittero:
             # el CM twittea
             cm.twittear_hilo('discursosdeaf', [tw_intro, tw_terminos, tw_verbos])
         
-    def postear_en_discursosdemm(self, fecha):
-        pass
+    def postear_en_discursosdemm(self, fecha=None):
+        resultados = Resultados()
+        kiosco = Kiosco()
+        visu = Visualizador()
+        tolkien = Escritor()
+
+        # recupero frecuencias al azar
+        freqs = resultados.bd.frecuencias.aggregate([{ '$match': { 'diario': 'casarosada', 'categoria': 'macri' } }, { '$sample': { 'size': 1 } }])
+        if not bool(freqs):
+            return
+        
+        cm = CM()
+        for freq in freqs:
+            # recupero texto del discurso
+            discurso = kiosco.noticias(diario='casarosada', categorias='macri', url=freq['url'])[0]
+            
+            # armo tweet con el discurso en imagenes
+            paths_imagenes = visu.texto_en_imagenes(discurso['texto'], 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/intromm")
+            tw_intro = {
+                'texto': "Análisis de discurso del " + tolkien.separar_fecha(fecha=freq['fecha'][:8]) + " de #MauricioMacri.",
+                'media': paths_imagenes
+                }
+
+            # armo textos del tweet
+            txt_terminos = tolkien.texto_tweet_terminos_discurso(freq['f_ter_txt'])
+            txt_verbos = tolkien.texto_tweet_verbos_discurso(freq['f_ver_txt'])
+
+            # armo tweet con top 15 de terminos
+            path_imagen_terminos = os.getcwd() + '/imagenes/terminos_discursomm.png'
+            etiquetas_terminos = [nombre for nombre, m in freq['f_ter_txt'].items()][:15]
+            data_terminos = [m for nombre, m in freq['f_ter_txt'].items()][:15]
+            visu.lollipop(path=path_imagen_terminos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de términos", etiquetas=etiquetas_terminos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_terminos)
+            tw_terminos = {
+                'texto': txt_terminos,
+                'media': [path_imagen_terminos]
+                }
+
+            # armo tweet con top 15 de verbos
+            path_imagen_verbos = os.getcwd() + '/imagenes/verbos_discursomm.png'
+            etiquetas_verbos = [nombre for nombre, m in freq['f_ver_txt'].items()][:15]
+            data_verbos = [m for nombre, m in freq['f_ver_txt'].items()][:15]
+            visu.lollipop(path=path_imagen_verbos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de verbos", etiquetas=etiquetas_verbos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_verbos)
+            tw_verbos = {
+                'texto': txt_verbos,
+                'media': [path_imagen_verbos]
+                }
+
+            # el CM twittea
+            cm.twittear_hilo('discursosdemm', [tw_intro, tw_terminos, tw_verbos])
 
 def usage():
     print("twittero (twitter dicenlosmedios, discursosdeaf, discursosdemm) v1.0")

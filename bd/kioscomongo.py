@@ -18,7 +18,7 @@ class Kiosco:
 
         self.bd = MongoClient(conexion).dlm
 
-    def noticias(self, fecha=None, diario=None, categorias=None, fecha_in=True, url_in=True, diario_in=True, cat_in=True, tit_in=True, text_in=True):
+    def noticias(self, fecha=None, diario=None, categorias=None, url=None, fecha_in=True, url_in=True, diario_in=True, cat_in=True, tit_in=True, text_in=True):
         query = {}
 
         if fecha:
@@ -33,8 +33,11 @@ class Kiosco:
         if diario:
             query['diario']=diario
 
+        if url:
+            query['url']=url
+
         if categorias:
-            if len(categorias) > 0:
+            if type(categorias) is list:
                 query['cat']={"$in":categorias}
 
         cursor = self.bd.noticias.find(query)
