@@ -77,7 +77,8 @@ class Twittero:
             discurso = kiosco.noticias(fecha=fecha_discurso, diario='casarosada')[0]
             
             # armo tweet con el discurso en imagenes
-            paths_imagenes = visu.texto_en_imagenes(discurso['texto'], 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/introaf")
+            texto = " ".join(re.split("\s+", discurso['texto'], flags=re.UNICODE))
+            paths_imagenes = visu.texto_en_imagenes(texto, 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/introaf")
             tw_intro = {
                 'texto': "Análisis de discurso del " + tolkien.separar_fecha(fecha=fecha) + " de #AlbertoFernández.",
                 'media': paths_imagenes
