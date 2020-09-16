@@ -12,6 +12,6 @@ class TestAmbito(unittest.TestCase):
         t = Twittero()
         t.postear_en_discursosdeaf(fecha='20200914')
 
-    def test_postear_en_discursosdemm(self):
+    def test_postear_en_discursoshistoricos(self):
         t = Twittero()
-        t.postear_en_discursosdemm()
+        t.postear_en_discursoshistoricos('discursosdenk')
