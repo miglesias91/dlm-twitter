@@ -209,12 +209,63 @@ class Twittero:
             # el CM twittea
             cm.twittear_hilo('discursosdecfk', [tw_intro, tw_terminos, tw_verbos])
 
+    def postear_en_discursosdenk(self, fecha=None):
+        resultados = Resultados()
+        kiosco = Kiosco()
+        visu = Visualizador()
+        tolkien = Escritor()
+
+        # recupero frecuencias al azar
+        freqs = resultados.bd.frecuencias.aggregate([{ '$match': { 'diario': 'casarosada', 'categoria': 'nestor' } }, { '$sample': { 'size': 1 } }])
+        if not bool(freqs):
+            return
+        
+        cm = CM()
+        for freq in freqs:
+            # recupero texto del discurso
+            discurso = kiosco.noticias(diario='casarosada', categorias='nestor', url=freq['url'])[0]
+            
+            # armo tweet con el discurso en imagenes
+            paths_imagenes = visu.texto_en_imagenes(discurso['texto'], 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/intronk")
+            tw_intro = {
+                'texto': "Análisis de discurso del " + tolkien.separar_fecha(fecha=freq['fecha'][:8]) + " de #NéstorKirchner.",
+                'media': paths_imagenes
+                }
+
+            # armo textos del tweet
+            txt_terminos = tolkien.texto_tweet_terminos_discurso(freq['f_ter_txt'])
+            txt_verbos = tolkien.texto_tweet_verbos_discurso(freq['f_ver_txt'])
+
+            # armo tweet con top 15 de terminos
+            path_imagen_terminos = os.getcwd() + '/imagenes/terminos_discursonk.png'
+            etiquetas_terminos = [nombre for nombre, m in freq['f_ter_txt'].items()][:15]
+            data_terminos = [m for nombre, m in freq['f_ter_txt'].items()][:15]
+            visu.lollipop(path=path_imagen_terminos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de términos", etiquetas=etiquetas_terminos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_terminos)
+            tw_terminos = {
+                'texto': txt_terminos,
+                'media': [path_imagen_terminos]
+                }
+
+            # armo tweet con top 15 de verbos
+            path_imagen_verbos = os.getcwd() + '/imagenes/verbos_discursonk.png'
+            etiquetas_verbos = [nombre for nombre, m in freq['f_ver_txt'].items()][:15]
+            data_verbos = [m for nombre, m in freq['f_ver_txt'].items()][:15]
+            visu.lollipop(path=path_imagen_verbos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de verbos", etiquetas=etiquetas_verbos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_verbos)
+            tw_verbos = {
+                'texto': txt_verbos,
+                'media': [path_imagen_verbos]
+                }
+
+            # el CM twittea
+            cm.twittear_hilo('discursosdenk', [tw_intro, tw_terminos, tw_verbos])
+
 def usage():
     print("twittero (twitter dicenlosmedios, discursosdeaf, discursosdemm) v1.0")
     print("./twittero.py dicenlosmedios [fecha] [diario] [categoria]")
     print("./twittero.py discursosdeaf [fecha]")
-    print("./twittero.py discursosdemm [fecha](opcional)")
-    print("./twittero.py discursosdecfk [fecha](opcional)")
+    print("./twittero.py discursosdemm [(opcional) fecha]")
+    print("./twittero.py discursosdecfk [(opcional) fecha]")
+    print("./twittero.py discursosdenk [(opcional) fecha]")
 
 def main():
     accion = None
@@ -230,7 +281,9 @@ def main():
             print("twittero (twitter dicenlosmedios, discursosdeaf, discursosdemm) v1.0")
             print("./twittero.py dicenlosmedios [fecha] [diario] [categoria]")
             print("./twittero.py discursosdeaf [fecha]")
-            print("./twittero.py discursosdemm [fecha](opcional)")
+            print("./twittero.py discursosdemm [(opcional) fecha]")
+            print("./twittero.py discursosdecfk [(opcional) fecha]")
+            print("./twittero.py discursosdenk [(opcional) fecha]")
             return
         else:
             assert False, "opción desconocida"
@@ -251,6 +304,8 @@ def main():
         t.postear_en_discursosdemm()
     elif cuenta == 'discursosdecfk':
         t.postear_en_discursosdecfk()
+    elif cuenta == 'discursosdenk':
+        t.postear_en_discursosdenk()
 
 if __name__ == "__main__":
     main()        
