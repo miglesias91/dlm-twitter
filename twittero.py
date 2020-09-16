@@ -80,7 +80,7 @@ class Twittero:
             texto = " ".join(re.split("\s+", discurso['texto'], flags=re.UNICODE))
             paths_imagenes = visu.texto_en_imagenes(texto, 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/introaf")
             tw_intro = {
-                'texto': "Análisis de discurso del " + tolkien.separar_fecha(fecha=fecha) + " de #AlbertoFernández.",
+                'texto': "Discurso del " + tolkien.separar_fecha(fecha=fecha) + " de #AlbertoFernández. Sigue hilo.",
                 'media': paths_imagenes
                 }
 
@@ -284,7 +284,7 @@ class Twittero:
             texto = " ".join(re.split("\s+", discurso['texto'], flags=re.UNICODE))
             paths_imagenes = visu.texto_en_imagenes(texto, 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/intro" + subfijopng)
             tw_intro = {
-                'texto': "Análisis de discurso del " + tolkien.separar_fecha(fecha=freq['fecha'][:8]) + " de " + hashtag + ".",
+                'texto': "Discurso del " + tolkien.separar_fecha(fecha=freq['fecha'][:8]) + " de " + hashtag + ". Sigue hilo.",
                 'media': paths_imagenes
                 }
 
