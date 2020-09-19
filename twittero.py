@@ -80,7 +80,7 @@ class Twittero:
             texto = " ".join(re.split("\s+", discurso['texto'], flags=re.UNICODE))
             paths_imagenes = visu.texto_en_imagenes(texto, 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/introaf")
             tw_intro = {
-                'texto': "Discurso del " + tolkien.separar_fecha(fecha=fecha) + " de #AlbertoFernández. Hilo 👇.",
+                'texto': "Discurso del " + tolkien.separar_fecha(fecha=fecha) + " de #AlbertoFernández. Hilo 👇",
                 'media': paths_imagenes
                 }
 
