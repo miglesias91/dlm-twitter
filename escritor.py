@@ -26,7 +26,7 @@ class Escritor:
             else:
                 secciones = '#' + categorias
 
-            texto = "📊 Frecuencia de palabras en las noticias de " + secciones + " de " + self.hashtags[diario] + " del " + self.separar_fecha(fecha) + ". Hilo 👇\n"
+            texto = "Frecuencia de palabras en las noticias de " + secciones + " de " + self.hashtags[diario] + " del " + self.separar_fecha(fecha) + " 📊\n"
         else:
             texto = "📊 Frecuencia de palabras en las noticias de " + self.hashtags[diario] + " del " + self.separar_fecha(fecha=fecha) + ". Hilo 👇\n"
         
