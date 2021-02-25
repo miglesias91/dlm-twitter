@@ -63,7 +63,10 @@ class Resultados:
                 query['fecha']=fecha
 
         if diario:
-            query['diario']=diario
+            if type(diario) is list:
+                query['diario']={"$in":diario}
+            else:
+                query['diario']=diario
 
         if categorias:
             if type(categorias) is list:
