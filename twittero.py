@@ -270,7 +270,8 @@ class Twittero:
         categoria, subfijopng, hashtag = self.info_cuenta(cuenta)
 
         # recupero frecuencias al azar
-        freqs = resultados.bd.frecuencias.aggregate([{ '$match': { 'diario': 'casarosada', 'categoria': categoria } }, { '$sample': { 'size': 1 } }])
+        # TODO: ARREGLAR ESTO. QUE DEJE DE APUNTAR A 'frecuencias_discursos_20190820160724'
+        freqs = resultados.bd.frecuencias_discursos_20190820160724.aggregate([{ '$match': { 'diario': 'casarosada', 'categoria': categoria } }, { '$sample': { 'size': 1 } }])
         
         if not bool(freqs):
             return
