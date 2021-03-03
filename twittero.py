@@ -57,6 +57,32 @@ class Twittero:
         cm = CM()
         cm.twittear_hilo('dicenlosmedios', textos_e_imagenes)
 
+    def postear_cristinometro(self, fecha):
+        resultados = Resultados()
+        visu = Visualizador()
+        tolkien = Escritor()
+
+        tabla = {}
+        for medio in [medio for medio in tolkien.hashtags.keys() if medio != 'casarosada']:
+
+            freqs = resultados.frecuencias(fecha=fecha, diario=medio, terminos=False, verbos=False, personas=True, top=1000)
+            
+            if not bool(freqs):
+                continue
+            
+            cfk_freq = sum([f[1] for f in freqs.items() if f[0] in ['CFK', 'Cristina', 'Cristina Fernández', 'Cristina Fernández de Kirchner', 'Cristina Fernández De Kirchner', 'Vicepresidenta']])
+            
+            if cfk_freq == 0:
+                continue
+
+            tabla[medio] = cfk_freq
+
+        ordenada = {k: v for k, v in sorted(tabla.items(), key=lambda item: item[1], reverse=True)}
+        texto = tolkien.tweet_cristinometro(freqs=ordenada, fecha=fecha)
+        
+        cm = CM()
+        cm.twittear_texto('dicenlosmedios', texto) 
+
     def postear_en_discursosdeaf(self, fecha):
         resultados = Resultados()
         kiosco = Kiosco()
@@ -333,6 +359,7 @@ def usage():
     print("./twittero.py discursosdemm [(opcional) fecha]")
     print("./twittero.py discursosdecfk [(opcional) fecha]")
     print("./twittero.py discursosdenk [(opcional) fecha]")
+    print("./twittero.py cristinometro [(opcional) fecha]")
 
 def main():
     accion = None
@@ -351,6 +378,7 @@ def main():
             print("./twittero.py discursosdemm [(opcional) fecha]")
             print("./twittero.py discursosdecfk [(opcional) fecha]")
             print("./twittero.py discursosdenk [(opcional) fecha]")
+            print("./twittero.py cristinometro [(opcional) fecha]")
             return
         else:
             assert False, "opción desconocida"
@@ -364,6 +392,13 @@ def main():
         categorias = args[3]
 
         t.postear_en_dlm(fecha=fecha, diario=diario, categorias=categorias)
+    elif cuenta == 'cristinometro':
+        if len(args) != 1:
+            fecha = args[1]
+        else:
+            fecha = datetime.date.today().strftime('%Y%m%d')
+
+        t.postear_cristinometro(fecha=fecha)
     elif cuenta == 'discursosdeaf':
         fecha = args[1]
         t.postear_en_discursosdeaf(fecha=fecha)

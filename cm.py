@@ -6,6 +6,11 @@ class CM:
     def __init__(self):
         pass
 
+    def twittear_texto(self, cuenta, texto):
+        api = self.api(cuenta)
+        api.update_status(status=texto)
+
+
     def twittear_hilo(self, cuenta, textos_e_imagenes):
         api = self.api(cuenta)
 

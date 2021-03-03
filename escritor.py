@@ -1,4 +1,4 @@
-
+import datetime
 
 class Escritor:
     def __init__(self):
@@ -12,8 +12,34 @@ class Escritor:
             'paginadoce': '#Pagina12',
             'perfil': '#Perfil',
             'telam': '#Telam',
-            'todonoticias': '#TN'
+            'todonoticias': '#TN',
+            'diariodeleuco': "#LeDoyMiPalabra"
         }
+
+    def tweet_cristinometro(self, freqs, fecha):
+
+        if fecha == datetime.date.today().strftime('%Y%m%d'):
+            texto = "#Cristinómetro parcial del " + self.separar_fecha(fecha) + " 📊\n"
+        else:
+            texto = "#Cristinómetro final del " + self.separar_fecha(fecha) + " 📊\n"    
+
+        i = 0
+        for diario, m in freqs.items():
+            linea = ""
+            i += 1
+            if i >= 10:
+                linea = str(i) + ". " + self.hashtags[diario] + ": " + str(m) + "\n"
+                texto += linea
+                break
+            else:
+                linea = str(i) + ".  " + self.hashtags[diario] + ": " + str(m) + "\n"
+
+            if len(texto) + len(linea) > 220:
+                break
+            else:
+                texto += linea
+
+        return texto
 
     def tweet_tendencias(self, freqs, fecha, diario, categorias=None):
         texto = ""
