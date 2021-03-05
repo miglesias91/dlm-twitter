@@ -75,7 +75,7 @@ class Twittero:
         tabla = {}
         for medio in [medio for medio in tolkien.hashtags.keys() if medio != 'casarosada']:
 
-            freqs = resultados.frecuencias(fecha=fecha, diario=medio, terminos=False, verbos=False, personas=True, top=1000)
+            freqs = resultados.frecuencias(fecha=fecha, diario=medio, terminos=True, verbos=False, personas=True, top=2000)
             
             if not bool(freqs):
                 continue
