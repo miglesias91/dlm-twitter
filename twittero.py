@@ -70,13 +70,16 @@ class Twittero:
             if not bool(freqs):
                 continue
             
-            cfk_freq = sum([f[1] for f in freqs.items() if f[0] in ['CFK', 'Cristina', 'Cristina Fernández', 'Cristina Fernández de Kirchner', 'Cristina Fernández De Kirchner', 'Vicepresidenta']])
+            cfk_freq = sum([f[1] for f in freqs.items() if f[0] in ['CFK', 'Cristina', 'Cristina Kirchner', 'Cristina Fernández', 'Cristina Fernández de Kirchner', 'Cristina Fernández De Kirchner', 'Vicepresidenta']])
             
             if cfk_freq == 0:
                 continue
 
             tabla[medio] = cfk_freq
 
+        if len(tabla) == 0:
+            return
+            
         ordenada = {k: v for k, v in sorted(tabla.items(), key=lambda item: item[1], reverse=True)}
         texto = tolkien.tweet_cristinometro(freqs=ordenada, fecha=fecha)
         
