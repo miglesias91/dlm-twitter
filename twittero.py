@@ -62,6 +62,13 @@ class Twittero:
         visu = Visualizador()
         tolkien = Escritor()
 
+        cfk = ['CFK', 'Kirchner','Cristina', 'Cristina Kirchner', 'Cristina Fernández', 'Cristina Fernández de Kirchner', 'Cristina Fernández De Kirchner', 'Vicepresidenta']
+        dolar = ['dólar', 'US$', 'Dólar']
+        corrupcion = ['corrupción', 'corrupto', 'Corrupción']
+        larreta = ['Larreta', 'Horacio Larreta', 'Rodríguez Larreta', 'Horacio Rodríguez', 'Horacio Rodríguez Larreta']
+
+        terminos = cfk
+
         tabla = {}
         for medio in [medio for medio in tolkien.hashtags.keys() if medio != 'casarosada']:
 
@@ -70,12 +77,12 @@ class Twittero:
             if not bool(freqs):
                 continue
             
-            cfk_freq = sum([f[1] for f in freqs.items() if f[0] in ['CFK', 'Cristina', 'Cristina Kirchner', 'Cristina Fernández', 'Cristina Fernández de Kirchner', 'Cristina Fernández De Kirchner', 'Vicepresidenta']])
+            total = sum([f[1] for f in freqs.items() if f[0] in terminos])
             
-            if cfk_freq == 0:
+            if total == 0:
                 continue
 
-            tabla[medio] = cfk_freq
+            tabla[medio] = total
 
         if len(tabla) == 0:
             return
