@@ -13,15 +13,23 @@ class Escritor:
             'perfil': '#Perfil',
             'telam': '#Telam',
             'todonoticias': '#TN',
-            'diariodeleuco': "#LeDoyMiPalabra"
+            'diariodeleuco': "#LeDoyMiPalabra",
+            'cfk' : '#CFK',
+            'dolar' : '#dólar',
+            'corrupcion' : '#corrupción',
+            'larreta' : '#Larreta',
+            'venezuela' : '#Venezuela',
+            'inseguridad' : '#inseguridad',
+            'miedo' : '#miedo'
         }
 
-    def tweet_cristinometro(self, freqs, fecha):
+    def tweet_contador(self, freqs, fecha, concepto):
+
 
         if fecha == datetime.date.today().strftime('%Y%m%d'):
-            texto = "#Cristinómetro parcial del " + self.separar_fecha(fecha) + " 📊\n"
+            texto = "Conteo parcial de menciones a palabras relacionadas con " + self.hashtags[concepto] + " del " + self.separar_fecha(fecha) + " 📊\n"
         else:
-            texto = "#Cristinómetro final del " + self.separar_fecha(fecha) + " 📊\n"    
+            texto = "Conteo final de menciones a palabras relacionadas con " + self.hashtags[concepto] + " del " + self.separar_fecha(fecha) + " 📊\n"
 
         i = 0
         for diario, m in freqs.items():

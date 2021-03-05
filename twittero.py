@@ -57,17 +57,20 @@ class Twittero:
         cm = CM()
         cm.twittear_hilo('dicenlosmedios', textos_e_imagenes)
 
-    def postear_cristinometro(self, fecha):
+    def postear_contador(self, fecha, concepto):
         resultados = Resultados()
         visu = Visualizador()
         tolkien = Escritor()
 
-        cfk = ['CFK', 'Kirchner','Cristina', 'Cristina Kirchner', 'Cristina Fernández', 'Cristina Fernández de Kirchner', 'Cristina Fernández De Kirchner', 'Vicepresidenta']
-        dolar = ['dólar', 'US$', 'Dólar']
-        corrupcion = ['corrupción', 'corrupto', 'Corrupción']
-        larreta = ['Larreta', 'Horacio Larreta', 'Rodríguez Larreta', 'Horacio Rodríguez', 'Horacio Rodríguez Larreta']
-
-        terminos = cfk
+        terminos = {
+        'cfk' : ['CFK', 'Kirchner','Cristina', 'Cristina Kirchner', 'Cristina Fernández', 'Cristina Fernández de Kirchner', 'Cristina Fernández De Kirchner', 'Vicepresidenta'],
+        'dolar' : ['dólar', 'US$', 'Dólar'],
+        'corrupcion' : ['corrupción', 'corrupto', 'Corrupción'],
+        'larreta' : ['Larreta', 'Horacio Larreta', 'Rodríguez Larreta', 'Horacio Rodríguez', 'Horacio Rodríguez Larreta'],
+        'venezuela' : ['Venezuela', 'Nicolás Maduro', 'Maduro', 'Chávez', 'Hugo Chávez', 'Chavez', 'Hugo Chavez'],
+        'inseguridad' : ['inseguridad', 'inseguro'],
+        'miedo' : ['miedo', 'muerte', 'muerto', 'muerta','asesinato', 'horror']
+        }
 
         tabla = {}
         for medio in [medio for medio in tolkien.hashtags.keys() if medio != 'casarosada']:
@@ -77,7 +80,7 @@ class Twittero:
             if not bool(freqs):
                 continue
             
-            total = sum([f[1] for f in freqs.items() if f[0] in terminos])
+            total = sum([f[1] for f in freqs.items() if f[0] in terminos[concepto]])
             
             if total == 0:
                 continue
@@ -88,7 +91,7 @@ class Twittero:
             return
             
         ordenada = {k: v for k, v in sorted(tabla.items(), key=lambda item: item[1], reverse=True)}
-        texto = tolkien.tweet_cristinometro(freqs=ordenada, fecha=fecha)
+        texto = tolkien.tweet_contador(concepto=concepto, freqs=ordenada, fecha=fecha)
         
         cm = CM()
         cm.twittear_texto('dicenlosmedios', texto) 
@@ -369,7 +372,7 @@ def usage():
     print("./twittero.py discursosdemm [(opcional) fecha]")
     print("./twittero.py discursosdecfk [(opcional) fecha]")
     print("./twittero.py discursosdenk [(opcional) fecha]")
-    print("./twittero.py cristinometro [(opcional) fecha]")
+    print("./twittero.py contador concepto [(opcional) fecha]")
 
 def main():
     accion = None
@@ -388,7 +391,7 @@ def main():
             print("./twittero.py discursosdemm [(opcional) fecha]")
             print("./twittero.py discursosdecfk [(opcional) fecha]")
             print("./twittero.py discursosdenk [(opcional) fecha]")
-            print("./twittero.py cristinometro [(opcional) fecha]")
+            print("./twittero.py contador [concepto] [(opcional) fecha]")
             return
         else:
             assert False, "opción desconocida"
@@ -402,13 +405,16 @@ def main():
         categorias = args[3]
 
         t.postear_en_dlm(fecha=fecha, diario=diario, categorias=categorias)
-    elif cuenta == 'cristinometro':
-        if len(args) != 1:
-            fecha = args[1]
-        else:
+    elif cuenta == 'contador':
+        if len(args) == 1:
+            print("Falta un argumento: ./twittero.py contador [concepto] [(opcional) fecha]")
+        if len(args) == 2:
             fecha = datetime.date.today().strftime('%Y%m%d')
+        else:
+            fecha = args[2]
 
-        t.postear_cristinometro(fecha=fecha)
+        concepto = args[1]
+        t.postear_contador(fecha=fecha, concepto=concepto)
     elif cuenta == 'discursosdeaf':
         fecha = args[1]
         t.postear_en_discursosdeaf(fecha=fecha)
