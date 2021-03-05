@@ -27,9 +27,9 @@ class Escritor:
 
 
         if fecha == datetime.date.today().strftime('%Y%m%d'):
-            texto = "Conteo parcial de menciones a palabras relacionadas con " + self.hashtags[concepto] + " del " + self.separar_fecha(fecha) + " 📊\n"
+            texto = "#Conteo parcial de menciones a palabras relacionadas con " + self.hashtags[concepto] + " del " + self.separar_fecha(fecha) + " 📊\n"
         else:
-            texto = "Conteo final de menciones a palabras relacionadas con " + self.hashtags[concepto] + " del " + self.separar_fecha(fecha) + " 📊\n"
+            texto = "#Conteo final de menciones a palabras relacionadas con " + self.hashtags[concepto] + " del " + self.separar_fecha(fecha) + " 📊\n"
 
         i = 0
         for diario, m in freqs.items():
