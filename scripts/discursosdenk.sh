@@ -1,4 +1,4 @@
 !#/bin/sh
-source /home/ec2-user/repos/dlm-twitter/env/bin/activate
-cd /home/ec2-user/repos/dlm-twitter/
+source /home/ubuntu/repos/dlm/twitter/env/bin/activate
+cd /home/ubuntu/repos/dlm/twitter/
 env/bin/python3 ./twittero.py discursosdenk
