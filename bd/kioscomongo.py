@@ -7,7 +7,7 @@ from pymongo import MongoClient
 
 class Kiosco:
     def __init__(self, fecha=None):
-        with open('conexiones.json') as c:
+        with open('conexiones-oracle.json') as c:
             j = json.load(c)
             
         usuario = j['kiosco']['usuario']

@@ -49,16 +49,16 @@ class Escritor:
 
         return texto
 
-    def tweet_tendencias(self, freqs, fecha, diario, categorias=None):
+    def tweet_tendencias(self, freqs, fecha, diario, secciones=None):
         texto = ""
-        if categorias:
-            if type(categorias) is list:
-                hashtags_categorias = ["#"+c for c in categorias]
+        if secciones:
+            if type(secciones) is list:
+                hashtags_secciones = ["#"+s for s in secciones]
 
-                if len(categorias) > 0:
-                    secciones = " de " + " y ".join([", ".join(hashtags_categorias[:-1]),hashtags_categorias[-1]] if len(hashtags_categorias) > 2 else hashtags_categorias)
+                if len(secciones) > 0:
+                    secciones = " de " + " y ".join([", ".join(hashtags_secciones[:-1]),hashtags_secciones[-1]] if len(hashtags_secciones) > 2 else hashtags_secciones)
             else:
-                secciones = '#' + categorias
+                secciones = '#' + secciones
 
             texto = "#Frecuencia de palabras en las noticias de " + secciones + " de " + self.hashtags[diario] + " del " + self.separar_fecha(fecha) + " 📊\n"
         else:

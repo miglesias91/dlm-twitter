@@ -5,7 +5,7 @@ from pymongo import MongoClient
 
 class Resultados:
     def __init__(self):
-        with open('conexiones.json') as c:
+        with open('conexiones-oracle.json') as c:
             j = json.load(c)
             
         usuario = j['resultados']['usuario']
@@ -16,7 +16,7 @@ class Resultados:
 
         self.bd = MongoClient(conexion).resultados
 
-    def frecuencias(self, fecha=None, diario=None, categorias=None, terminos=True, verbos=True, personas=True, top=10):
+    def frecuencias(self, fecha=None, diario=None, secciones=None, sustantivos=True, verbos=True, entidades=True, top=10):
         query = {}
 
         if fecha:
@@ -28,32 +28,32 @@ class Resultados:
         if diario:
             query['diario']=diario
 
-        if categorias:
-            if type(categorias) is list:
-                query['categoria']={"$in":categorias}
+        if secciones:
+            if type(secciones) is list:
+                query['seccion']={"$in":secciones}
             else:
-                query['categoria']=categorias
+                query['seccion']=secciones
 
         freq_total = {}
-        f_ter, f_ver, f_per = {}, {}, {}
+        fsus, fver, fent = {}, {}, {}
         for f in self.bd.frecuencias.find(query):
-            if terminos:
-                f_ter = self.sumar_freqs(f['ter_tit'], f['ter_txt'], top)
+            if sustantivos:
+                fsus = self.sumar_freqs(f['sustit'], f['sustxt'], top)
 
             if verbos:
-                f_ver = self.sumar_freqs(f['ver_tit'], f['ver_txt'], top)
+                fver = self.sumar_freqs(f['vertit'], f['vertxt'], top)
 
-            if personas:
-                f_per = self.sumar_freqs(f['per_tit'], f['per_txt'], top)
+            if entidades:
+                fent = self.sumar_freqs(f['enttit'], f['enttxt'], top)
 
-            f_todo = self.sumar_freqs(f_ter, f_ver, top)
-            f_todo = self.sumar_freqs(f_todo, f_per, top)
+            f_todo = self.sumar_freqs(fsus, fver, top)
+            f_todo = self.sumar_freqs(f_todo, fent, top)
 
             freq_total = self.sumar_freqs(freq_total, f_todo, top)
 
         return freq_total
 
-    def frecuencias_sin_agrupar(self, fecha=None, diario=None, categorias=None, terminos=True, verbos=True, personas=True, top=10):
+    def frecuencias_sin_agrupar(self, fecha=None, diario=None, secciones=None, top=10):
         query = {}
 
         if fecha:
@@ -68,11 +68,11 @@ class Resultados:
             else:
                 query['diario']=diario
 
-        if categorias:
-            if type(categorias) is list:
-                query['categoria']={"$in":categorias}
+        if secciones:
+            if type(secciones) is list:
+                query['seccion']={"$in":secciones}
             else:
-                query['categoria']=categorias
+                query['seccion']=secciones
 
         return [n for n in self.bd.frecuencias.find(query)]
 
