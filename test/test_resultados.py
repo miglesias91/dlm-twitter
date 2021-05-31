@@ -6,5 +6,5 @@ class TestAmbito(unittest.TestCase):
 
     def test_frecuencia_todo(self):
         r = Resultados()
-        freqs = r.frecuencias(fecha='20200911', diario='clarin', categorias='politica', verbos=False)
+        freqs = r.frecuencias(fecha='20200911', diario='clarin', secciones='politica', verbos=False)
         freqs

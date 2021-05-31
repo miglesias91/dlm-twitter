@@ -20,7 +20,7 @@ class Twittero:
     def etiqueta():
         pass
 
-    def resumen_semanal_dlm(self, fecha, diario, categorias):
+    def resumen_semanal_dlm(self, fecha, diario, secciones):
         pass
 
     def postear_en_dlm(self, fecha, diario, secciones):
@@ -108,7 +108,7 @@ class Twittero:
         
         cm = CM()
         for freq_y_hora in freqs_por_hora:
-            hora = freq_y_hora['categoria']
+            hora = freq_y_hora['seccion']
             fecha_discurso = datetime.datetime.strptime(fecha+hora, '%Y%m%d%H%M%S')
 
             # recupero texto del discurso
@@ -155,11 +155,10 @@ class Twittero:
         visu = Visualizador()
         tolkien = Escritor()
 
-        categoria, subfijopng, hashtag = self.info_cuenta(cuenta)
+        presidente, subfijopng, hashtag = self.info_cuenta(cuenta)
 
         # recupero frecuencias al azar
-        # TODO: ARREGLAR ESTO. QUE DEJE DE APUNTAR A 'frecuencias_discursos_20190820160724'
-        freqs = resultados.bd.frecuencias_discursos_20190820160724.aggregate([{ '$match': { 'diario': 'casarosada', 'categoria': categoria } }, { '$sample': { 'size': 1 } }])
+        freqs = resultados.bd.frecuencias_discursos.aggregate([{ '$match': { 'presidente': presidente } }, { '$sample': { 'size': 1 } }])
         
         if not bool(freqs):
             return
@@ -167,11 +166,12 @@ class Twittero:
         cm = CM()
         for freq in freqs:
             # recupero texto del discurso
-            discurso = kiosco.noticias(diario='casarosada', categorias=categoria, url=freq['url'])[0]
+            discurso = kiosco.noticias(diario='casarosada', url=freq['url'])[0]
             
             # armo tweet con el discurso en imagenes
             texto = " ".join(re.split("\s+", discurso['texto'], flags=re.UNICODE))
             paths_imagenes = visu.texto_en_imagenes(texto, 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/intro" + subfijopng)
+            # TODO: la fecha esta MAL. pasar de date a string.
             tw_intro = {
                 'texto': "Discurso del " + tolkien.separar_fecha(fecha=freq['fecha'][:8]) + " de " + hashtag + ". Hilo 👇",
                 'media': paths_imagenes
@@ -216,7 +216,7 @@ class Twittero:
 
 def usage():
     print("twittero (twitter dicenlosmedios, discursosdeaf, discursosdemm) v1.0")
-    print("./twittero.py dicenlosmedios [fecha] [diario] [categoria]")
+    print("./twittero.py dicenlosmedios [fecha] [diario] [seccion]")
     print("./twittero.py discursosdeaf [fecha]")
     print("./twittero.py discursosdemm [(opcional) fecha]")
     print("./twittero.py discursosdecfk [(opcional) fecha]")
@@ -235,7 +235,7 @@ def main():
     for o, a in opts:
         if o == "--help" or o == "-h":
             print("twittero (twitter dicenlosmedios, discursosdeaf, discursosdemm) v1.0")
-            print("./twittero.py dicenlosmedios [fecha] [diario] [categoria]")
+            print("./twittero.py dicenlosmedios [fecha] [diario] [seccion]")
             print("./twittero.py discursosdeaf [fecha]")
             print("./twittero.py discursosdemm [(opcional) fecha]")
             print("./twittero.py discursosdecfk [(opcional) fecha]")
