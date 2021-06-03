@@ -82,8 +82,8 @@ class Escritor:
 
         return texto
 
-    def texto_tweet_terminos_discurso(self, freqs):
-        texto = "#Frecuencia de términos 📊\n"
+    def texto_tweet_sustantivos_discurso(self, freqs):
+        texto = "#Frecuencia de sustantivos 📊\n"
 
         i = 0
         for nombre, m in freqs.items():
@@ -105,6 +105,27 @@ class Escritor:
 
     def texto_tweet_verbos_discurso(self, freqs):
         texto = "#Frecuencia de verbos 📊\n"
+
+        i = 0
+        for nombre, m in freqs.items():
+            linea = ""
+            i += 1
+            if i >= 10:
+                linea = str(i) + ". #" + nombre + " " + str(m) + "\n"
+                texto += linea
+                break
+            else:
+                linea = str(i) + ".  #" + nombre + " " + str(m) + "\n"
+
+            if len(texto) + len(linea) > 220:
+                break
+            else:
+                texto += linea
+
+        return texto
+
+    def texto_tweet_adjetivos_discurso(self, freqs):
+        texto = "#Frecuencia de adjetivos 📊\n"
 
         i = 0
         for nombre, m in freqs.items():

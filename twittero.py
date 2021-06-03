@@ -102,48 +102,47 @@ class Twittero:
         tolkien = Escritor()
 
         # recupero frecuencias del discurso
-        freqs_por_hora = resultados.frecuencias_sin_agrupar(fecha=fecha, diario='casarosada', top=20,verbos=False)
-        if not bool(freqs_por_hora):
+        freqs = resultados.bd.frecuencias_discursos.aggregate([{ '$match': { 'presidente': 'alberto' , 'fecha': fecha } }])
+
+        if not bool(freqs):
             return
         
         cm = CM()
-        for freq_y_hora in freqs_por_hora:
-            hora = freq_y_hora['seccion']
-            fecha_discurso = datetime.datetime.strptime(fecha+hora, '%Y%m%d%H%M%S')
+        for freq in freqs:
 
             # recupero texto del discurso
-            discurso = kiosco.noticias(fecha=fecha_discurso, diario='casarosada')[0]
+            discurso = kiosco.noticias(diario='casarosada', url=freq['url'])[0]
             
             # armo tweet con el discurso en imagenes
             texto = " ".join(re.split("\s+", discurso['texto'], flags=re.UNICODE))
             paths_imagenes = visu.texto_en_imagenes(texto, 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/introaf")
             tw_intro = {
-                'texto': "Discurso del " + tolkien.separar_fecha(fecha=fecha) + " de #AlbertoFernández. Hilo 👇",
+                'texto': "Discurso del " + tolkien.separar_fecha(fecha=freq['fecha']) + " de #AlbertoFernández. Hilo 👇",
                 'media': paths_imagenes
                 }
 
             # armo textos del tweet
-            txt_terminos = tolkien.texto_tweet_terminos_discurso(freq_y_hora['ter_txt'])
-            txt_verbos = tolkien.texto_tweet_verbos_discurso(freq_y_hora['ver_txt'])
+            txt_sustantivos = tolkien.texto_tweet_sustantivos_discurso(freq['sustxt'])
+            txt_adjetivos = tolkien.texto_tweet_adjetivos_discurso(freq['adjtxt'])
 
             # armo tweet con top 15 de terminos
-            path_imagen_terminos = os.getcwd() + '/imagenes/terminos_discursoaf.png'
-            etiquetas_terminos = [nombre for nombre, m in freq_y_hora['ter_txt'].items()][:15]
-            data_terminos = [m for nombre, m in freq_y_hora['ter_txt'].items()][:15]
-            visu.lollipop(path=path_imagen_terminos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de términos", etiquetas=etiquetas_terminos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_terminos)
+            path_imagen_sustantivos = os.getcwd() + '/imagenes/sustantivos_discursoaf.png'
+            etiquetas_sustantivos = [nombre for nombre, m in freq['sustxt'].items()][:15]
+            data_sustantivos = [m for nombre, m in freq['sustxt'].items()][:15]
+            visu.lollipop(path=path_imagen_sustantivos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de sustantivos", etiquetas=etiquetas_sustantivos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_sustantivos)
             tw_terminos = {
-                'texto': txt_terminos,
-                'media': [path_imagen_terminos]
+                'texto': txt_sustantivos,
+                'media': [path_imagen_sustantivos]
                 }
 
             # armo tweet con top 15 de verbos
-            path_imagen_verbos = os.getcwd() + '/imagenes/verbos_discursoaf.png'
-            etiquetas_verbos = [nombre for nombre, m in freq_y_hora['ver_txt'].items()][:15]
-            data_verbos = [m for nombre, m in freq_y_hora['ver_txt'].items()][:15]
-            visu.lollipop(path=path_imagen_verbos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de verbos", etiquetas=etiquetas_verbos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_verbos)
+            path_imagen_adjetivos = os.getcwd() + '/imagenes/adjetivos_discursoaf.png'
+            etiquetas_adjetivos = [nombre for nombre, m in freq['adjtxt'].items()][:15]
+            data_adjetivos = [m for nombre, m in freq['adjtxt'].items()][:15]
+            visu.lollipop(path=path_imagen_adjetivos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de adjetivos", etiquetas=etiquetas_adjetivos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_adjetivos)
             tw_verbos = {
-                'texto': txt_verbos,
-                'media': [path_imagen_verbos]
+                'texto': txt_adjetivos,
+                'media': [path_imagen_adjetivos]
                 }
 
             # el CM twittea
@@ -173,32 +172,32 @@ class Twittero:
             paths_imagenes = visu.texto_en_imagenes(texto, 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/intro" + subfijopng)
             # TODO: la fecha esta MAL. pasar de date a string.
             tw_intro = {
-                'texto': "Discurso del " + tolkien.separar_fecha(fecha=freq['fecha'][:8]) + " de " + hashtag + ". Hilo 👇",
+                'texto': "Discurso del " + tolkien.separar_fecha(fecha=freq['fecha']) + " de " + hashtag + ". Hilo 👇",
                 'media': paths_imagenes
                 }
 
             # armo textos del tweet
-            txt_terminos = tolkien.texto_tweet_terminos_discurso(freq['f_ter_txt'])
-            txt_verbos = tolkien.texto_tweet_verbos_discurso(freq['f_ver_txt'])
+            txt_sustantivos = tolkien.texto_tweet_sustantivos_discurso(freq['sustxt'])
+            txt_adjetivos = tolkien.texto_tweet_adjetivos_discurso(freq['adjtxt'])
 
             # armo tweet con top 15 de terminos
-            path_imagen_terminos = os.getcwd() + '/imagenes/terminos_discurso' + subfijopng + '.png'
-            etiquetas_terminos = [nombre for nombre, m in freq['f_ter_txt'].items()][:15]
-            data_terminos = [m for nombre, m in freq['f_ter_txt'].items()][:15]
-            visu.lollipop(path=path_imagen_terminos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de términos", etiquetas=etiquetas_terminos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_terminos)
+            path_imagen_sustantivos = os.getcwd() + '/imagenes/sustantivos_discurso' + subfijopng + '.png'
+            etiquetas_sustantivos = [nombre for nombre, m in freq['sustxt'].items()][:15]
+            data_sustantivos = [m for nombre, m in freq['sustxt'].items()][:15]
+            visu.lollipop(path=path_imagen_sustantivos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de sustantivos", etiquetas=etiquetas_sustantivos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_sustantivos)
             tw_terminos = {
-                'texto': txt_terminos,
-                'media': [path_imagen_terminos]
+                'texto': txt_sustantivos,
+                'media': [path_imagen_sustantivos]
                 }
 
             # armo tweet con top 15 de verbos
-            path_imagen_verbos = os.getcwd() + '/imagenes/verbos_discurso' + subfijopng + '.png'
-            etiquetas_verbos = [nombre for nombre, m in freq['f_ver_txt'].items()][:15]
-            data_verbos = [m for nombre, m in freq['f_ver_txt'].items()][:15]
-            visu.lollipop(path=path_imagen_verbos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de verbos", etiquetas=etiquetas_verbos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_verbos)
+            path_imagen_adjetivos = os.getcwd() + '/imagenes/adjetivos_discurso' + subfijopng + '.png'
+            etiquetas_adjetivos = [nombre for nombre, m in freq['adjtxt'].items()][:15]
+            data_adjetivos = [m for nombre, m in freq['adjtxt'].items()][:15]
+            visu.lollipop(path=path_imagen_adjetivos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de adjetivos", etiquetas=etiquetas_adjetivos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_adjetivos)
             tw_verbos = {
-                'texto': txt_verbos,
-                'media': [path_imagen_verbos]
+                'texto': txt_adjetivos,
+                'media': [path_imagen_adjetivos]
                 }
 
             # el CM twittea

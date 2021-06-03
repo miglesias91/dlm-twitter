@@ -16,7 +16,7 @@ class Resultados:
 
         self.bd = MongoClient(conexion).resultados
 
-    def frecuencias(self, fecha=None, diario=None, secciones=None, sustantivos=True, verbos=True, entidades=True, top=10):
+    def frecuencias(self, fecha=None, diario=None, secciones=None, sustantivos=True, verbos=True, entidades=True, adjetivos=True, top=10):
         query = {}
 
         if fecha:
@@ -40,13 +40,17 @@ class Resultados:
             if sustantivos:
                 fsus = self.sumar_freqs(f['sustit'], f['sustxt'], top)
 
+            if adjetivos:
+                fadj = self.sumar_freqs(f['adjtit'], f['adjtxt'], top)
+
             if verbos:
                 fver = self.sumar_freqs(f['vertit'], f['vertxt'], top)
 
             if entidades:
                 fent = self.sumar_freqs(f['enttit'], f['enttxt'], top)
 
-            f_todo = self.sumar_freqs(fsus, fver, top)
+            f_todo = self.sumar_freqs(fsus, fadj, top)
+            f_todo = self.sumar_freqs(f_todo, fver, top)
             f_todo = self.sumar_freqs(f_todo, fent, top)
 
             freq_total = self.sumar_freqs(freq_total, f_todo, top)
