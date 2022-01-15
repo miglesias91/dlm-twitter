@@ -33,8 +33,19 @@ class Twittero:
         else:
             secciones = [secciones]
 
-        freqs = resultados.frecuencias(fecha=fecha, diario=diario, secciones=secciones, top=20,verbos=False)
+        # PROBAR ESTO EN SSH-ADMIN !!! Y REVISAR EL BACKUP DE JSONS.
+        kiosco = Kiosco()
+        docs = kiosco.titulos(datetime.datetime.strptime(fecha, '%Y%m%d'), diario,secciones)
+
+        from utiles.docs2freqs import docs2freqs
+
+        modelo = docs2freqs([docs['titulo'] for docs in docs])
+        modelo.calcular()
+        freqs = modelo.top_sin_duplicados(15)
+
+        # freqs = resultados.frecuencias(fecha=fecha, diario=diario, secciones=secciones, top=20,verbos=False)
         if not bool(freqs):
+            print('No se encontro ningun titulo.')
             return
 
         path_imagen = os.getcwd() + '/imagenes/' + diario + '-todo.png'
