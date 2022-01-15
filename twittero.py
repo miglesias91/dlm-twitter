@@ -55,8 +55,14 @@ class Twittero:
         textos_e_imagenes = [{'media': [path_imagen], 'texto': texto}]
 
         for s in secciones:
-            freqs = resultados.frecuencias(fecha=fecha, diario=diario, secciones=s, top=20, verbos=False)
+            docs = kiosco.titulos(datetime.datetime.strptime(fecha, '%Y%m%d'), diario,secciones)
+
+            modelo = docs2freqs([docs['titulo'] for docs in docs])
+            modelo.calcular()
+            freqs = modelo.top_sin_duplicados(15)
+            # freqs = resultados.frecuencias(fecha=fecha, diario=diario, secciones=s, top=20, verbos=False)
             if not bool(freqs):
+                print(f'No se encontro ningun titulo para la seccion {s}.')
                 continue
 
             path_imagen = os.getcwd() + '/imagenes/' + diario + '-' + s + '.png'
