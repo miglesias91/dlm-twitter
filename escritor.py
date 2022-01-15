@@ -60,9 +60,9 @@ class Escritor:
             else:
                 secciones = '#' + secciones
 
-            texto = "#Frecuencia de palabras en las noticias de " + secciones + " de " + self.hashtags[diario] + " del " + self.separar_fecha(fecha) + " 📊\n"
+            texto = "#Frecuencia de palabras en los títulos de " + secciones + " de " + self.hashtags[diario] + " del " + self.separar_fecha(fecha) + " 📊\n"
         else:
-            texto = "📊 #Frecuencia de palabras en las noticias de " + self.hashtags[diario] + " del " + self.separar_fecha(fecha=fecha) + ". Hilo 👇\n"
+            texto = "📊 #Frecuencia de palabras en los títulos de " + self.hashtags[diario] + " del " + self.separar_fecha(fecha=fecha) + ". Hilo 👇\n"
         
         i = 0
         for nombre, m in freqs.items():
