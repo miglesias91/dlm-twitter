@@ -1,3 +1,5 @@
+apertium==0.2.3
+apertium-streamparser==5.0.2
 certifi==2020.6.20
 chardet==3.0.4
 cycler==0.10.0
@@ -8,6 +10,7 @@ numpy==1.19.2
 oauthlib==3.1.0
 pandas==1.1.2
 Pillow==7.2.0
+pkg-resources==0.0.0
 pymongo==3.11.0
 pyparsing==2.4.7
 PySocks==1.7.1
@@ -19,3 +22,4 @@ six==1.15.0
 tweepy==3.9.0
 urllib3==1.25.10
 wordcloud==1.8.0
+
