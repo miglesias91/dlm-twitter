@@ -21,8 +21,14 @@ class docs2freqs:
 
 
     def calcular(self):
-
+        
+        i = 1
+        print(f'docs a procesar: {len(self.docs)}')
         for doc in self.docs:
+
+            print(f'procesando doc: {i}')
+            i += 1
+            
             doc = doc.lower().translate(str.maketrans('', '', self.puntuacion))
             terminos = word_tokenize(doc)
             

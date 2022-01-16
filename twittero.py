@@ -35,11 +35,11 @@ class Twittero:
 
         # PROBAR ESTO EN SSH-ADMIN !!! Y REVISAR EL BACKUP DE JSONS.
         kiosco = Kiosco()
-        docs = kiosco.titulos(datetime.datetime.strptime(fecha, '%Y%m%d'), diario,secciones)
+        docs = kiosco.noticias(datetime.datetime.strptime(fecha, '%Y%m%d'), diario,secciones)
 
         from utiles.docs2freqs import docs2freqs
 
-        modelo = docs2freqs([docs['titulo'] for docs in docs])
+        modelo = docs2freqs([docs['texto'] for docs in docs])
         modelo.calcular()
         freqs = modelo.top_sin_duplicados(15)
 
@@ -55,9 +55,9 @@ class Twittero:
         textos_e_imagenes = [{'media': [path_imagen], 'texto': texto}]
 
         for s in secciones:
-            docs = kiosco.titulos(datetime.datetime.strptime(fecha, '%Y%m%d'), diario, s)
+            docs = kiosco.noticias(datetime.datetime.strptime(fecha, '%Y%m%d'), diario, s)
 
-            modelo = docs2freqs([docs['titulo'] for docs in docs])
+            modelo = docs2freqs([docs['texto'] for docs in docs])
             modelo.calcular()
             freqs = modelo.top_sin_duplicados(15)
             # freqs = resultados.frecuencias(fecha=fecha, diario=diario, secciones=s, top=20, verbos=False)
