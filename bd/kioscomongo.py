@@ -39,6 +39,8 @@ class Kiosco:
         if secciones:
             if type(secciones) is list:
                 query['seccion']={"$in":secciones}
+            else:
+                query['seccion'] = secciones
 
         cursor = self.bd.noticias.find(query)
 
