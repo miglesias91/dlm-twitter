@@ -33,7 +33,6 @@ class Twittero:
         else:
             secciones = [secciones]
 
-        # PROBAR ESTO EN SSH-ADMIN !!! Y REVISAR EL BACKUP DE JSONS.
         kiosco = Kiosco()
         docs = kiosco.noticias(datetime.datetime.strptime(fecha, '%Y%m%d'), diario,secciones)
 
@@ -43,7 +42,6 @@ class Twittero:
         modelo.calcular()
         freqs = modelo.top_sin_duplicados(15)
 
-        # freqs = resultados.frecuencias(fecha=fecha, diario=diario, secciones=secciones, top=20,verbos=False)
         if not bool(freqs):
             print('No se encontro ningun titulo.')
             return
@@ -60,7 +58,7 @@ class Twittero:
             modelo = docs2freqs([docs['texto'] for docs in docs])
             modelo.calcular()
             freqs = modelo.top_sin_duplicados(15)
-            # freqs = resultados.frecuencias(fecha=fecha, diario=diario, secciones=s, top=20, verbos=False)
+
             if not bool(freqs):
                 print(f'No se encontro ningun titulo para la seccion {s}.')
                 continue
@@ -75,15 +73,15 @@ class Twittero:
         cm.twittear_hilo('dicenlosmedios', textos_e_imagenes)
 
     def postear_contador(self, fecha, concepto):
-        resultados = Resultados()
+        # resultados = Resultados()
         tolkien = Escritor()
 
         terminos = {
-        'cfk' : ['CFK', 'Kirchner','Cristina', 'Cristina Kirchner', 'Cristina Fernández', 'Cristina Fernández de Kirchner', 'Cristina Fernández De Kirchner', 'Vicepresidenta'],
+        'cfk' : ['CFK', 'Kirchner','Cristina', 'CristinaKirchner', 'CristinaFernández', 'Vicepresidenta'],
         'dolar' : ['dólar', 'US$', 'Dólar'],
         'corrupcion' : ['corrupción', 'corrupto', 'Corrupción'],
-        'larreta' : ['Larreta', 'Horacio Larreta', 'Rodríguez Larreta', 'Horacio Rodríguez', 'Horacio Rodríguez Larreta'],
-        'venezuela' : ['Venezuela', 'Nicolás Maduro', 'Maduro', 'Chávez', 'Hugo Chávez', 'Chavez', 'Hugo Chavez'],
+        'larreta' : ['Larreta', 'HoracioLarreta', 'RodríguezLarreta', 'HoracioRodríguez'],
+        'venezuela' : ['Venezuela', 'NicolásMaduro', 'Maduro', 'Chávez', 'HugoChávez', 'Chavez', 'HugoChavez'],
         'inseguridad' : ['inseguridad', 'inseguro'],
         'miedo' : ['miedo', 'muerte', 'muerto', 'muerta','asesinato', 'horror']
         }
@@ -91,8 +89,16 @@ class Twittero:
         tabla = {}
         for medio in [medio for medio in tolkien.hashtags.keys() if medio != 'casarosada']:
 
-            freqs = resultados.frecuencias(fecha=fecha, diario=medio, verbos=False, top=2000)
-            
+            # freqs = resultados.frecuencias(fecha=fecha, diario=medio, verbos=False, top=2000)
+            kiosco = Kiosco()
+            docs = kiosco.noticias(datetime.datetime.strptime(fecha, '%Y%m%d'), medio)
+
+            from utiles.docs2freqs import docs2freqs
+
+            modelo = docs2freqs([docs['texto'] for docs in docs])
+            modelo.calcular()
+            freqs = modelo.top_sin_duplicados(2000)
+
             if not bool(freqs):
                 continue
             
