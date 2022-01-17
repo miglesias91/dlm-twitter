@@ -119,57 +119,91 @@ class Twittero:
         cm.twittear_texto('dicenlosmedios', texto) 
 
     def postear_en_discursosdeaf(self, fecha):
-        resultados = Resultados()
+        # resultados = Resultados()
         kiosco = Kiosco()
         visu = Visualizador()
         tolkien = Escritor()
 
         # recupero frecuencias del discurso
-        freqs = resultados.bd.frecuencias_discursos.aggregate([{ '$match': { 'presidente': 'alberto' , 'fecha': fecha } }])
-
-        if not bool(freqs):
-            return
+        # freqs = resultados.bd.frecuencias_discursos.aggregate([{ '$match': { 'presidente': 'alberto' , 'fecha': fecha } }])
         
-        cm = CM()
-        for freq in freqs:
+        # recupero discursos de la fecha
+        kiosco = Kiosco()
+        docs = kiosco.noticias(datetime.datetime.strptime(fecha, '%Y%m%d'), 'casarosada')
 
-            # recupero texto del discurso
-            discurso = kiosco.noticias(diario='casarosada', url=freq['url'])[0]
-            
-            # armo tweet con el discurso en imagenes
-            texto = " ".join(re.split("\s+", discurso['texto'], flags=re.UNICODE))
+        from utiles.docs2freqs import docs2freqs
+
+        cm = CM()
+        for doc in docs:
+            discurso = doc['texto']
+            modelo = docs2freqs([discurso])
+            modelo.calcular()
+            freqs = modelo.top_sin_duplicados(15)
+
+            texto = " ".join(re.split("\s+", discurso, flags=re.UNICODE))
             paths_imagenes = visu.texto_en_imagenes(texto, 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/introaf")
             tw_intro = {
-                'texto': "Discurso del " + tolkien.separar_fecha(fecha=freq['fecha']) + " de #AlbertoFernández. Hilo 👇",
+                'texto': "Discurso del " + tolkien.separar_fecha(fecha=fecha) + " de #AlbertoFernández. Hilo 👇",
                 'media': paths_imagenes
                 }
 
-            # armo textos del tweet
-            txt_sustantivos = tolkien.texto_tweet_sustantivos_discurso(freq['sustxt'])
-            txt_adjetivos = tolkien.texto_tweet_adjetivos_discurso(freq['adjtxt'])
-
             # armo tweet con top 15 de terminos
-            path_imagen_sustantivos = os.getcwd() + '/imagenes/sustantivos_discursoaf.png'
-            etiquetas_sustantivos = [nombre for nombre, m in freq['sustxt'].items()][:15]
-            data_sustantivos = [m for nombre, m in freq['sustxt'].items()][:15]
-            visu.lollipop(path=path_imagen_sustantivos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de sustantivos", etiquetas=etiquetas_sustantivos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_sustantivos)
+            path_imagen_terminos = os.getcwd() + '/imagenes/freqs_discursoaf.png'
+            etiquetas_terminos = [nombre for nombre, m in freqs.items()][:15]
+            data_terminos = [m for nombre, m in freqs.items()][:15]
+            visu.lollipop(path=path_imagen_terminos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de terminos", etiquetas=etiquetas_terminos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_terminos)
+            txt_terminos = tolkien.texto_tweet_terminos_discurso(freqs=freqs)
             tw_terminos = {
-                'texto': txt_sustantivos,
-                'media': [path_imagen_sustantivos]
+                'texto': txt_terminos,
+                'media': [path_imagen_terminos]
                 }
 
-            # armo tweet con top 15 de verbos
-            path_imagen_adjetivos = os.getcwd() + '/imagenes/adjetivos_discursoaf.png'
-            etiquetas_adjetivos = [nombre for nombre, m in freq['adjtxt'].items()][:15]
-            data_adjetivos = [m for nombre, m in freq['adjtxt'].items()][:15]
-            visu.lollipop(path=path_imagen_adjetivos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de adjetivos", etiquetas=etiquetas_adjetivos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_adjetivos)
-            tw_verbos = {
-                'texto': txt_adjetivos,
-                'media': [path_imagen_adjetivos]
-                }
+            cm.twittear_hilo('discursosdeaf', [tw_intro, tw_terminos])
+#####
 
-            # el CM twittea
-            cm.twittear_hilo('discursosdeaf', [tw_intro, tw_terminos, tw_verbos])
+        # if not bool(freqs):
+        #     return
+        
+        # cm = CM()
+        # for freq in freqs:
+
+        #     # recupero texto del discurso
+        #     discurso = kiosco.noticias(diario='casarosada', url=freq['url'])[0]
+            
+        #     # armo tweet con el discurso en imagenes
+        #     texto = " ".join(re.split("\s+", discurso['texto'], flags=re.UNICODE))
+        #     paths_imagenes = visu.texto_en_imagenes(texto, 'calibri.ttf', 17, 800, 600, os.getcwd() + "/imagenes/introaf")
+        #     tw_intro = {
+        #         'texto': "Discurso del " + tolkien.separar_fecha(fecha=freq['fecha']) + " de #AlbertoFernández. Hilo 👇",
+        #         'media': paths_imagenes
+        #         }
+
+        #     # armo textos del tweet
+        #     txt_sustantivos = tolkien.texto_tweet_sustantivos_discurso(freq['sustxt'])
+        #     txt_adjetivos = tolkien.texto_tweet_adjetivos_discurso(freq['adjtxt'])
+
+        #     # armo tweet con top 15 de terminos
+        #     path_imagen_sustantivos = os.getcwd() + '/imagenes/sustantivos_discursoaf.png'
+        #     etiquetas_sustantivos = [nombre for nombre, m in freq['sustxt'].items()][:15]
+        #     data_sustantivos = [m for nombre, m in freq['sustxt'].items()][:15]
+        #     visu.lollipop(path=path_imagen_sustantivos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de sustantivos", etiquetas=etiquetas_sustantivos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_sustantivos)
+        #     tw_terminos = {
+        #         'texto': txt_sustantivos,
+        #         'media': [path_imagen_sustantivos]
+        #         }
+
+        #     # armo tweet con top 15 de verbos
+        #     path_imagen_adjetivos = os.getcwd() + '/imagenes/adjetivos_discursoaf.png'
+        #     etiquetas_adjetivos = [nombre for nombre, m in freq['adjtxt'].items()][:15]
+        #     data_adjetivos = [m for nombre, m in freq['adjtxt'].items()][:15]
+        #     visu.lollipop(path=path_imagen_adjetivos, colormap=visu.cmap_del_dia(), titulo="Frecuencia de adjetivos", etiquetas=etiquetas_adjetivos, unidad="cantidad de apariciones", valfmt="{x:.0f}", data=data_adjetivos)
+        #     tw_verbos = {
+        #         'texto': txt_adjetivos,
+        #         'media': [path_imagen_adjetivos]
+        #         }
+
+        #     # el CM twittea
+        #     cm.twittear_hilo('discursosdeaf', [tw_intro, tw_terminos, tw_verbos])
 
     def postear_en_discursoshistoricos(self, cuenta, fecha=None):
         resultados = Resultados()
