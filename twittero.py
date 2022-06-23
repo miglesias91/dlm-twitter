@@ -24,7 +24,7 @@ class Twittero:
         pass
 
     def postear_en_dlm(self, fecha, diario, secciones):
-        resultados = Resultados()
+#        resultados = Resultados()
         visu = Visualizador()
         tolkien = Escritor()
 
